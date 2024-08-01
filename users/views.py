@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth import get_user_model
+from django.contrib import messages
+from django.db import IntegrityError
 
 
 
@@ -17,21 +19,35 @@ def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.is_active = False
-            user.save()
-            token = default_token_generator.make_token(user)
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            confirmation_link = request.build_absolute_uri(f'/confirm-email/{uid}/{token}/')
-            html_message = render_to_string('users/confirmation_email.html', {'confirmation_link': confirmation_link, 'user': user.email})
-            send_mail(
-                'Confirm your email',
-                'Please confirm your email by clicking the link below.',
-                'agyekumoxgood@gmail.com',
-                [user.email],
-                html_message=html_message
-            )
-            return redirect('email_confirmation_sent')
+            email = form.cleaned_data.get('email')
+            if User.objects.filter(email=email).exists():
+                messages.warning(request, 'Email already exists. Please choose a different email.')
+                return redirect('register')
+
+            try:
+                user = form.save(commit=False)
+                user.is_active = False
+                user.save()
+                token = default_token_generator.make_token(user)
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
+                confirmation_link = request.build_absolute_uri(f'/confirm-email/{uid}/{token}/')
+                html_message = render_to_string('users/confirmation_email.html', {'confirmation_link': confirmation_link, 'user': user.email})
+                send_mail(
+                    'Confirm your email',
+                    'Please confirm your email by clicking the link below.',
+                    'agyekumoxgood@gmail.com',
+                    [user.email],
+                    html_message=html_message
+                )
+                return redirect('email_confirmation_sent')
+            
+            except IntegrityError as e:
+                if 'auth_user.username' in str(e):
+                    messages.error(request, 'Username already exists. Please try again.')
+                    return redirect('register')
+                else:
+                    messages.error(request, 'An error occurred during registration. Please try again.')
+                    return redirect('register')
     else:
         form = RegisterForm()
     return render(request, 'users/register.html', {'form': form})

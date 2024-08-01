@@ -1,6 +1,6 @@
 {% extends 'base/main.html' %}
 {% block content %}
-<div class="form_wrapper" style="width: 40%; height: 75vh; margin: auto; background-color: transparent; border-radius: 10px; box-shadow: 0px 0px 10px 5px rgb(240, 239, 239);">
+<div class="form_wrapper" style="width: 40%; height: min-content; margin: auto; background-color: transparent; border-radius: 10px; box-shadow: 0px 0px 10px 5px rgb(240, 239, 239);">
     <div class="container">
         {% load crispy_forms_tags %}
         <form action="" method="post">
@@ -13,6 +13,7 @@
                 <button class="btn btn-outline-info" type="submit">Sign Up</button>
             </div>
         </form>
+        <small style="margin-bottom: 20px;">Already have an account? <a style="text-decoration: none;" href="{% url 'login' %}">Sign In</a></small>
     </div>
 </div>
     

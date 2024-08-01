@@ -1,0 +1,67 @@
+{% extends 'base/main.html' %}
+{% block searchkey %}
+    {% if user.is_superuser %}
+    <a style="text-decoration: none; color: white;" href="{% url 'home' %}">Home</a>
+    {% endif %}
+{% endblock searchkey %}
+
+{% block logout %}
+    {% if user.is_authenticated %}
+    <form id="logout-form" method="POST" action="{% url 'logout' %}" style="display:inline;">
+        {% csrf_token %}
+        <button style="border: none; background: none; color: white;" type="submit">Logout</button>
+    </form>
+    {% endif %}
+{% endblock logout %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h1 class="mb-4">Search Active Key</h1>
+        <form method="post" action="{% url 'search_key' %}" class="mb-4">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="school_email">School Email:</label>
+                <input type="email" id="school_email" name="school_email" class="form-control" placeholder="Enter school email" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+
+        <div style="width: 100%; height: 300px;">
+            {% if status_code == 200 %}
+            <h4 style="display: inline;"><span>Status Code: </span><span style="color: rgb(63, 141, 214);">{{ status_code }}</span></h4>
+            {% else %}
+            <h4><span>Status Code: </span> <span style="color: rgb(243, 34, 27);">{{ status_code }}</span></h4>
+            {% endif %}
+            {% if key_details %}
+                <div>
+                    <h3>Key Details:</h3>
+                    <div class="key_cards">
+                        <div class="key_id">
+                            <p>Key_Id: {{ key_details.key_id }}</p>
+                        </div>
+                        <div class="card_body">
+                            {% if key_details.key_status == "active" %}
+                            <p><strong>Status:</strong> <span style="color: lawngreen;">{{ key_details.key_status }}</span></p>
+                            <hr>
+                            {% elif key_details.key_status == "expired"  %}
+                            <p><strong>Status:</strong> <span style="color: rgb(252, 0, 0);">{{ key_details.key_status }}</span></p>
+                            <hr>
+                            {% else %}
+                            <p><strong>Status:</strong> <span style="color: rgb(252, 235, 0);">{{ key_details.key_status }}</span></p>
+                            <hr>
+                            {% endif %}
+                            <p><strong>DoP: </strong>{{ key_details.date_of_procurement|date:"Y-m-d" }}<sub style="font-size: 6px;">{{ key_details.date_of_procurement|date:"H:i" }}</sub></p>
+                            <hr>
+                            <p><strong>ED: </strong>{{ key_details.expiry_date|date:"Y-m-d" }}<sub style="font-size: 6px;">{{ key_details.expiry_date|date:"H:i" }}</sub></p>
+                        </div>
+                    </div>
+                </div>
+            {% elif error_message %}
+                <div>
+                    <p>{{ error_message }}</p>
+                </div>
+            {% endif %}
+      
+        </div>
+    </div>
+{% endblock content %}

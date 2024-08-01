@@ -13,7 +13,9 @@
                 <button class="btn btn-outline-info" type="submit">Sign In</button>
             </div>
         </form>
+        <small><a href="{% url 'password_reset' %}">forget password</a></small>
     </div>
+    <small style="margin-left: 10px;">Do not have an account? <a style="text-decoration: none;" href="{% url 'register' %}">Sign Up</a></small>
 </div>
     
 {% endblock content %}

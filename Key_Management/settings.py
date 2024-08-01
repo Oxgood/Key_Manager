@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'base.middleware.ExpiryCheckMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -127,6 +128,15 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+# Authentication backends
+AUTHENTICATION_BACKENDS = [
+    'users.loginBackend.LoginBackend',  # Using the custom authentication backend first.
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+LOGIN_REDIRECT_URL = 'home'
+LOGIN_URL = 'login'
+
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
@@ -138,6 +148,6 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-EMAIL_HOST_USER = os.environ.get('USER_EMAIL') # My email address which I have set in enviroment variables
-EMAIL_HOST_PASSWORD = os.environ.get('USER_PASSWORD') # My email password which I have set in enviroment variables
+EMAIL_HOST_USER = 'agyekumoxgood@gmail.com' # My email address which I have set in enviroment variables
+EMAIL_HOST_PASSWORD = 'dgqmtnmnjwlwbfnj' # My email password which I have set in enviroment variables
 PASSWORD_RESET_TIMEOUT = 300

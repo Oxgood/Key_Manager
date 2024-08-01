@@ -1,0 +1,28 @@
+{% extends 'base/main.html' %}
+
+{% block searchkey %}
+    {% if user.is_superuser %}
+        <a style="text-decoration: none; color: white;" href="{% url 'search_key' %}">Search Key</a>
+    {% endif %}
+{% endblock %}
+
+{% block logout %}
+    {% if user.is_authenticated %}
+    <form id="logout-form" method="POST" action="{% url 'logout' %}" style="display:inline;">
+        {% csrf_token %}
+        <button style="border: none; background: none; color: white; margin-left: 20px;" type="submit">Logout</button>
+    </form>
+    {% endif %}
+{% endblock logout %}
+
+{% block content %}
+    <div class="container mt-4">
+            <div style="width: 300px; height: 90px;color: black; margin: auto;">
+                <span>Are you sure you want to revoke key_id: </span><span>{{ key_id }}</span>
+                <div style="display: flex; width: 300px; height: 30px; justify-content: space-between; margin-top: 30px;">
+                    <span style="width: 100px; height: 30px; padding: 5px 20px; background: red;"><a style="text-decoration: none;color: white;" href="{% url 'home' %}">Cancel</a></span>
+                    <span style="width: 100px; height: 30px; padding: 5px 20px; background: green;"><a style="text-decoration: none;color: white;" href="{% url 'confirm_revoke_key' key_id %}">Confirm</a></span>
+                </div>
+            </div>
+    </div>
+{% endblock content %}

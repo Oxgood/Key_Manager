@@ -1,0 +1,86 @@
+{% extends 'base/main.html' %}
+
+{% block searchkey %}
+    {% if user.is_superuser %}
+        <a style="text-decoration: none; color: white;" href="{% url 'search_key' %}">Search Key</a>
+    {% endif %}
+{% endblock %}
+
+{% block logout %}
+    {% if user.is_authenticated %}
+    <form id="logout-form" method="POST" action="{% url 'logout' %}" style="display:inline;">
+        {% csrf_token %}
+        <button style="border: none; background: none; color: white; margin-left: 20px;" type="submit">Logout</button>
+    </form>
+    {% endif %}
+{% endblock logout %}
+
+{% block content %}
+    <div class="container mt-4">
+        {% if user.is_superuser %}
+            <p>Welcome, Admin! You have special access.</p>
+            <div id="admin_keys">
+                {% for key in all_access_keys %}
+                <div class="key_cards">
+                    <div class="key_id">
+                        <p>{{ key.id }}</p>
+                        {% if key.status == 'active' %}
+                        <a style="text-decoration: none; margin-right: 10px; color: yellow;" href="{% url 'revoke_key' key.id %}">Revoke</a>
+                        {% endif %}
+                    </div>
+                    <div class="card_body">
+                        {% if key.status == "active" %}
+                        <p><strong>Status:</strong> <span style="color: lawngreen;">{{ key.status }}</span></p>
+                        <hr>
+                        {% elif key.status == "expired"  %}
+                        <p><strong>Status:</strong> <span style="color: rgb(252, 0, 0);">{{ key.status }}</span></p>
+                        <hr>
+                        {% else %}
+                        <p><strong>Status:</strong> <span style="color: rgb(252, 235, 0);">{{ key.status }}</span></p>
+                        <hr>
+                        {% endif %}
+                        <p><strong>DoP: </strong>{{ key.date_of_procurement|date:"Y-m-d" }}<sub style="font-size: 6px;">{{ key.date_of_procurement|date:"H:i" }}</sub></p>
+                        <hr>
+                        <p><strong>ED: </strong>{{ key.expiry_date|date:"Y-m-d" }}<sub style="font-size: 6px;">{{ key.expiry_date|date:"H:i" }}</sub></p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+        
+            {% if not has_active_key %}
+            <div id="request_box">
+                <a href="{% url 'request_key' %}" class="btn btn-primary"> + Request New Key</a>
+            </div>
+            {% endif %}
+        
+
+            <h2 class="mt-4">Granted Keys</h2>
+
+            <div id="granted_keys">
+                {% for key in access_keys %}
+                    <div class="key_cards">
+                        <div class="key_id">
+                            {{ key.id }}
+                        </div>
+                        <div class="card_body">
+                            {% if key.status == "active" %}
+                            <p><strong>Status:</strong> <span style="color: lawngreen;">{{ key.status }}</span></p>
+                            <hr>
+                            {% elif key.status == "expired"  %}
+                            <p><strong>Status:</strong> <span style="color: rgb(252, 0, 0);">{{ key.status }}</span></p>
+                            <hr>
+                            {% else %}
+                            <p><strong>Status:</strong> <span style="color: rgb(252, 235, 0);">{{ key.status }}</span></p>
+                            <hr>
+                            {% endif %}
+                            <p><strong>DoP: </strong>{{ key.date_of_procurement|date:"Y-m-d" }}<sub style="font-size: 6px;">{{ key.date_of_procurement|date:"H:i" }}</sub></p>
+                            <hr>
+                            <p><strong>ED: </strong>{{ key.expiry_date|date:"Y-m-d" }}<sub style="font-size: 6px;">{{ key.expiry_date|date:"H:i" }}</sub></p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock content %}
